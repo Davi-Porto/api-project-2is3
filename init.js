@@ -1,4 +1,4 @@
-function show_modal(op, id){
+function show_modal(op1, id){
     let ret=false;
     if(op==0){ // Modal de edição do produto
         if(id&&id!=""){
@@ -18,5 +18,3 @@ function show_modal(op, id){
     }
     return ret;
 }
-
-// Hello, i'm here;
