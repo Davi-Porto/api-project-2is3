@@ -76,7 +76,7 @@ addForm.addEventListener('submit', (e)=>{
     product={
         nome: nm.value,
         valor: vl.value.replace(/\D+/, ''),
-        foto: "",
+        foto: linkValidation(src.value)?src.value:"",
     }
     addProduct(product);
 });
