@@ -232,13 +232,13 @@ function addProduct(product){
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(novoProduto)
+            body: JSON.stringfy(product)
         })
     .then(res=> res.json())
     .then((data)=> {
         if(data.success){
             stts.success = true;
-            stts.msg="Produto alterado com sucesso! (Atualizando...)";
+            stts.msg="Produto criado com sucesso! (Atualizando...)";
         }else{
             stts.msg=stat.message;
         }
