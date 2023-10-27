@@ -11,3 +11,16 @@ body{
     min-height: 100vh;
     font-family: 'Poppins';
 }
+
+.slide-right-animation{
+    opacity: 0;
+    transform: translateX(-110%);
+    animation: slide-right var(--showTime) forwards;
+}
+
+@keyframes slide-right{
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
