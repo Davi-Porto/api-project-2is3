@@ -1,4 +1,1 @@
-*.scss
-*.map
-*.json
-node_modules/*
+!index.html
