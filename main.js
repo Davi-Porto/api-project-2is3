@@ -38,12 +38,17 @@ deleteBtn.addEventListener('click', (e)=>{
     removeProduct(deleteModal.querySelector('#idToDelete').value);
 });
 
-// addModal.addEventListener('show.bs.modal', (e)=>{
-//     let img = e.target.querySelector("#imgToAdd");
-//     let src = e.target.querySelector("#srcToAdd");
-//     let nm = e.target.querySelector("#nmToAdd");
-//     let vl = e.target.querySelector("#vlToAdd");
-// });
+addModal.addEventListener('show.bs.modal', (e)=>{
+    let src = e.target.querySelector("#srcToAdd");
+    let img = e.target.querySelector("#imgToAdd");
+    src.addEventListener('input', (e)=>{
+        if(linkValidation(e.target.value)){
+            img.src=src.value;
+        }else{
+            img.src="assets/no-photo.jpg";
+        }
+    });
+});
 
 updateModal.addEventListener('show.bs.modal', (e)=>{
     let id = e.target.querySelector("#idToUpdate");
@@ -58,8 +63,8 @@ updateModal.addEventListener('show.bs.modal', (e)=>{
     nm.value=cardActive.querySelector(".card-text>span:nth-child(1)>span").innerHTML;
     vl.value=parseFloat(cardActive.querySelector(".card-text>span:nth-child(2)>span").innerHTML.replace(/[R\$\s\.]+/g,'').replace(",", "."))
     src.addEventListener('input', (e)=>{
-        if(linkValidation(e.target.value)){
-            img.src=e.target.value;
+        if(linkValidation(e.target.parentNode.value)){
+            img.src=src.value;
         }else{
             img.src="assets/no-photo.jpg";
         }
@@ -75,25 +80,53 @@ addForm.addEventListener('submit', (e)=>{
     let vl = e.target.querySelector("#vlToAdd");
     product={
         nome: nm.value,
-        valor: vl.value.replace(/\D+/, ''),
-        foto: linkValidation(src.value)?src.value:"",
+        valor: parseFloat(vl.value.replace(/[R\$\s\,]+/g, '')),
+        foto: (linkValidation(src.value)==true)?src.value:"",
     }
     addProduct(product);
+    bootstrap.Modal.getOrCreateInstance(addModal).hide();
 });
 
 updateForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     let id = e.target.querySelector("#idToUpdate");
-    let img = e.target.querySelector("#imgToUpdate");
     let src = e.target.querySelector("#srcToUpdate");
     let nm = e.target.querySelector("#nmToUpdate");
     let vl = e.target.querySelector("#vlToUpdate");
     product={
         id: id.value.replace(/\D+/, ''),
         nome: nm.value,
-        valor: vl.value.replace(/\D+/, ''),
-        foto: (linkValidation(src.value))?src.value:"",
+        valor: parseFloat(vl.value.replace(/[R\$\s\,]+/g, '')),
+        foto: (linkValidation(src.value)==true)?src.value:"",
     }
     changeProduct(product);
     bootstrap.Modal.getOrCreateInstance(updateModal).hide();
+});
+
+document.querySelector("#searchInput").addEventListener('focus', async function(){
+    const tooltip = new bootstrap.Tooltip(this, {
+        placement: 'bottom',
+        trigger: 'manual',
+        title: '.',
+        offset: [0, 15]
+    });
+    var hideBefore=false;
+    this.addEventListener('focusout', (e)=>{
+        tooltip.hide();
+        hideBefore=true;
+    });
+    this.setAttribute('readonly','');
+    await Sleep(200);
+    this.removeAttribute('readonly');
+    if(!hideBefore){
+        tooltip.show();
+        tooltip.tip.querySelector('.tooltip-inner').innerHTML=tratandoSearch(this.value);
+        this.addEventListener('input', (e)=>{
+            e.preventDefault();
+            let searchComplete=tratandoSearch(this.value, "s");
+            if(tooltip.tip){
+                tooltip.tip.querySelector('.tooltip-inner').innerHTML=searchComplete;
+            }
+        });
+    }
 });

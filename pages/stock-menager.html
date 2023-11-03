@@ -125,7 +125,7 @@
 								<div class="mb-3 row">
 									<div class="input-group col-sm-10">
 										<span class="input-group-text">R$</span>
-										<input required type="number" class="form-control" id="vlToUpdate" value="">
+										<input required type="number" step="0.01" class="form-control" id="vlToUpdate" value="">
 									</div>
 								</div>
 							</form>
@@ -166,7 +166,7 @@
 								<div class="mb-3 row">
 									<div class="input-group col-sm-10">
 										<span class="input-group-text">R$</span>
-										<input required type="number" class="form-control" id="vlToAdd" value="">
+										<input required type="number" step="0.01" class="form-control" id="vlToAdd" value="">
 									</div>
 								</div>
 							</form>
@@ -183,6 +183,17 @@
 			<h2>Produtos: </h2>
 			<section class="shadow border rounded p-3 w-100 mt-5" style="min-width: 240px; max-width: 1000px;">
 				<div class="row">
+					<div class="col col-lg-5 col-sm-8">
+						<form autocomplete="off" class="d-flex" role="search">
+							<input autocomplete="off" aria-autocomplete="none" class="form-control me-2" id="searchInput" type="search" placeholder="Pesquise" data-bs-custom-class="searchTooltip shadow-sm shadow shadow-lg rounded-3">
+							<button class="btn btn-outline-primary px-3" id="searchBtn" type="button">
+								<i class="fa fas fa-search fs-4"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+				<hr>
+				<div class="row">
 					<div class="col-6 d-flex">
 						<button type="button" class="btn btn-outline-primary px-4" id="btnRefresh">
 							<i class="fa-solid fa-arrows-rotate fs-4"></i>
@@ -194,7 +205,7 @@
 						</button>
 					</div>
 				</div>
-				<hr class="border border-3">
+				<hr>
 				<div class="conatiner-fluid pt-3 pe-4">
 					<div id="content-load" style="min-height: 295px;" class="row g-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4"></div>
 				</div>
@@ -209,9 +220,12 @@
 			<div id="card">
 				<div class="col d-flex justify-content-center">
 					<div class="card" style="width: 200px;" value="">
-						<button type="button" class="position-absolute top-0 start-100 translate-middle bg-white border border-primary border-1 rounded-circle" data-bs-toggle="modal" data-bs-target="#updateModal" onmouseover="changeActiveCard(this.parentNode)">
-							<i class="fa-solid fa-pen-to-square fs-4 d-flex align-items-center justify-content-center" style="padding: 10px;"></i>
-						</button>
+						<div class="card-header d-flex align-items-center justify-content-between">
+							<p class="m-0 rounded-0 text-primary bg-primary-subtle border-top border-bottom px-2 border-primary"># <span>123</span></p>
+							<button type="button" class="btn btn-outline-primary rounded-2" data-bs-toggle="modal" data-bs-target="#updateModal" onmouseover="changeActiveCard(this.parentNode.parentNode)">
+								<i class="fa-solid fa-pen-to-square fs-4 d-flex align-items-center justify-content-center"></i>
+							</button>
+						</div>
 						<img src="assets/no-photo.jpg" alt="Foto do produto" class="card-img-top p-2">
 						<div class="card-body">
 							<p class="card-text">

@@ -10,6 +10,8 @@ const updateForm = document.getElementById('updateForm');
 const addForm = document.getElementById('addForm');
 let activeCardEdit=undefined;
 var cards=[];
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
 const Sleep = t => new Promise(res => setTimeout(res, t));
 
@@ -19,9 +21,9 @@ function refreshContent(){
     var end=(localStorage.getItem("lastEnd")==null) ? 7 : parseInt(localStorage.getItem("lastEnd")) + 8;
     localStorage.setItem("lastStart", start);
     localStorage.setItem("lastEnd", end);
-    fetch('https://profrodolfo.com.br/api/listar/').then(data=>{ return data.json() }).then(data=>{
-        products = data;
-        if(products){
+    listar().then(data=>{
+        if(data){
+            products = data;
             return {
                 products: products,
                 first: start,
@@ -42,6 +44,7 @@ function addCard(v, res){
     cardLoading().then(async (load) => {
         let card = document.querySelector('#card > .col').cloneNode(true);
         card.querySelector(".card").value=v.id;
+        card.querySelector(".card-header > p > span").innerHTML=v.id;
         if(linkValidation(v.foto)){
             card.querySelector(".card-img-top").src=v.foto;
         }
@@ -50,12 +53,11 @@ function addCard(v, res){
         card.querySelector(".card-text>span:nth-child(2)").title='R$ '+(v.valor.replace('.', ','));
         card.querySelector(".card-text>span:nth-child(2)>span").innerHTML='R$ '+convertBR(v.valor);
         endList(res, card);
-        await Sleep(500);
+        await Sleep(150);
         content.removeChild(load);
         content.appendChild(card);
     });
 }
-
 
 function endList(res, card, op){
     if(res&&res.first!=0){
@@ -71,7 +73,7 @@ function endList(res, card, op){
     }else if(op==false){
         seeMore.hidden=false;
     }else{
-        if(res.products[res.products.length-1].id===card.querySelector('.card').value){
+        if(res&&res.products[res.products.length-1].id===card.querySelector('.card').value){
             endList(undefined, undefined, true);
         }
     }
@@ -232,7 +234,7 @@ function addProduct(product){
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringfy(product)
+            body: JSON.stringify(product)
         })
     .then(res=> res.json())
     .then((data)=> {
@@ -248,4 +250,68 @@ function addProduct(product){
             refreshContent();
         });
     });
+}
+
+async function search(prefix, loc){
+    if(prefix&&loc){
+        let padrao = new RegExp("["+String(loc).split('').join("]+[")+"]+", 'm');
+        await listar().then(data=>{
+            let resultado=[];
+            data.forEach(v=>{
+                if(typeof(loc)=='number'){
+                    if(prefix=="ID"){
+                        if(padrao.test(v.id)){
+                            resultado.push(v);
+                        }
+                    }else{
+                        if(padrao.test(v.valor)){
+                            resultado.push(v);
+                        }
+                    }
+                }else if(typeof(loc)=='string'){
+                    if(padrao.test(v.nome)){
+                        resultado.push(v);
+                    }
+                }
+            });
+            return resultado;
+        }).then(res=>{
+            clearContent();
+            res.forEach(v=>{
+                addCard(v, undefined);
+            });
+        })
+    }
+}
+
+function tratandoSearch(v, son="ns"){
+    if(v!=""){
+        let prefix=["", ""];
+        if(/^[^\:]/.test(v)){
+            v=':nm '+v;
+        }
+        if(v.length>4){
+            if(/^\:nm\ [\s\S]+$/.test(v.toLowerCase())){
+                prefix=["Nome", ""];
+            }else if(/^\:vl\ \d+((\.|\,)\d{1,2})?$/.test(v)){
+                prefix=["Valor", "R$ "];
+            }else if(/^\:id\ \d+$/.test(v)){
+                prefix=["ID", "# "];
+            }else{
+                return 'Valor inválido';
+            }
+            v=v.replace(/^\:\D{2}\ /, '');
+            v=(prefix[0]=="Valor"||prefix[0]=="ID")?parseFloat(v.replace(',', ".")):v;
+            if(son="s") search(prefix[0], v);
+            return '<p><strong>'+prefix[0]+'</strong>: <strong class="text-primary">'+prefix[1]+v+'</strong></p>';
+        }else{
+            return '<strong><p class="text-primary">'+v+' ...</p></strong><p><strong class="text-primary">:nm &lt;Nome&gt;</strong> : Pesquise pelo <strong>nome</strong>.</p><hr><p><strong class="text-primary">:id &lt;id&gt;</strong> : Pesquise pelo <strong>id</strong>.</p><hr><p><strong class="text-primary">:vl &lt;valor&gt;</strong> : Pesquise pelo <strong>valor</strong>.</p>'
+        }
+    }else{
+        return '<p><strong class="text-primary">&lt;Nome&gt;</strong></p><hr><p><strong class="text-primary">:id &lt;id&gt;</strong></p><hr><p><strong class="text-primary">:vl &lt;valor&gt;</strong></p>';
+    }
+}
+
+async function listar(){
+    return await fetch('https://profrodolfo.com.br/api/listar/').then(data=>{ return data.json() }).then(data=>{ return data });
 }

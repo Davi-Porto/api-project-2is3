@@ -1,0 +1,17 @@
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.searchTooltip{
+    --bs-tooltip-bg: #fff;
+    --bs-tooltip-color: #000;
+    --bs-tooltip-opacity: 1;
+    --bs-tooltip-max-width: 700px;
+}
+.searchTooltip .tooltip-inner{
+    text-align: start;
+}
