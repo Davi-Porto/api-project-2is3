@@ -1,4 +1,4 @@
-node_modules/
-*.json
-*.map
 *.scss
+*.map
+*.json
+node_modules/*
