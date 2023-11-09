@@ -8,6 +8,7 @@ const updateModal = document.getElementById('updateModal');
 const addModal = document.getElementById('addModal');
 const updateForm = document.getElementById('updateForm');
 const addForm = document.getElementById('addForm');
+const searchInput=document.querySelector("#searchInput");
 let activeCardEdit=undefined;
 var cards=[];
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -281,6 +282,7 @@ async function search(prefix, loc){
                 addCard(v, undefined);
             });
         })
+        endList(undefined, undefined, true);
     }
 }
 
@@ -302,7 +304,7 @@ function tratandoSearch(v, son="ns"){
             }
             v=v.replace(/^\:\D{2}\ /, '');
             v=(prefix[0]=="Valor"||prefix[0]=="ID")?parseFloat(v.replace(',', ".")):v;
-            if(son="s") search(prefix[0], v);
+            if(son=='s') search(prefix[0], v);
             return '<p><strong>'+prefix[0]+'</strong>: <strong class="text-primary">'+prefix[1]+v+'</strong></p>';
         }else{
             return '<strong><p class="text-primary">'+v+' ...</p></strong><p><strong class="text-primary">:nm &lt;Nome&gt;</strong> : Pesquise pelo <strong>nome</strong>.</p><hr><p><strong class="text-primary">:id &lt;id&gt;</strong> : Pesquise pelo <strong>id</strong>.</p><hr><p><strong class="text-primary">:vl &lt;valor&gt;</strong> : Pesquise pelo <strong>valor</strong>.</p>'
