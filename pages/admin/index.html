@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+		<link rel="stylesheet" href="../g_style/global.css" />
+		<script src="https://kit.fontawesome.com/373151a956.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+		<title>Gerênciador de Estoque - Admin</title>
+	</head>
+	<body class="overflow-x-hidden">
+		<header class="row bg-primary">
+			<nav class="navbar bg-body-tertiary fixed-top">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="#">Offcanvas navbar</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+						<div class="offcanvas-header">
+							<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+						</div>
+					<div class="offcanvas-body">
+						<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Link</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Dropdown
+							</a>
+							<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">Action</a></li>
+							<li><a class="dropdown-item" href="#">Another action</a></li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li><a class="dropdown-item" href="#">Something else here</a></li>
+							</ul>
+						</li>
+						</ul>
+						<form class="d-flex mt-3" role="search">
+						<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+						<button class="btn btn-outline-success" type="submit">Search</button>
+						</form>
+					</div>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<main class="w-100 p-3 d-flex flex-column align-items-center position-relative">
+			<div class="modal fade" id="deleteConfirm" tabindex="-1" aria-labelledby="deleteConfirm" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5">Tem certeza?</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<h2 class="fs-5">Deseja mesmo excluir o produto a seguir?</h2>
+						<form>
+							<div class="conatiner-fluid d-flex justify-content-center">
+								<img class="img-thumbnail" alt="Foto do produto" id="imgToDelete">
+							</div>
+							<div class="mb-3 row" hidden>
+								<div class="col-sm-10">
+									<input type="text" readonly class="form-control-plaintext" value="" id="idToDelete">
+								</div>
+							</div>
+							<div class="mb-3 row">
+								<label for="nmToDelete" class="col-sm-2 col-form-label"><strong>Nome: </strong></label>
+								<div class="col-sm-10">
+									<input type="text" readonly class="form-control-plaintext" value="" id="nmToDelete">
+								</div>
+							</div>
+							<div class="mb-3 row">
+								<label for="vlToDelete" class="col-sm-2 col-form-label"><strong>Valor: </strong></label>
+								<div class="col-sm-10">
+									<input type="text" readonly class="form-control-plaintext" value="" id="vlToDelete">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="deleteBtn">
+							<i class="fa fa-trash fs-4"></i>
+						</button>
+					</div>
+				</div>
+				</div>
+			</div>
+			<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title fs-5">Configuração: </h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="updateForm">
+								<input type="text" hidden class="form-control-plaintext" value="" id="idToUpdate">
+								<div class="conatiner-fluid d-flex justify-content-center">
+									<img src="../g_style/assets/no-photo.jpg" class="mb-3 img-thumbnail" alt="Foto do produto" id="imgToUpdate">
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">Link: </span>
+										<input type="url" class="form-control" value="" id="srcToUpdate">
+									</div>
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">Nome: </span>
+										<input required type="text" class="form-control" value="" id="nmToUpdate">
+									</div>
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">R$</span>
+										<input required type="number" step="0.01" class="form-control" id="vlToUpdate" value="">
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+							<button type="submit" form="updateForm" class="btn btn-light">
+								<i class="fa-solid fa-pen-to-square fs-4"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="updateAddModal" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1 class="modal-title fs-5">Novo produto: </h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="addForm">
+								<div class="conatiner-fluid d-flex justify-content-center">
+									<img src="../g_style/assets/no-photo.jpg" class="mb-3 img-thumbnail" alt="Foto do produto" id="imgToAdd">
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">Link: </span>
+										<input type="url" class="form-control" value="" id="srcToAdd">
+									</div>
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">Nome: </span>
+										<input required type="text" class="form-control" value="" id="nmToAdd">
+									</div>
+								</div>
+								<div class="mb-3 row">
+									<div class="input-group col-sm-10">
+										<span class="input-group-text">R$</span>
+										<input required type="number" step="0.01" class="form-control" id="vlToAdd" value="">
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+							<button type="submit" form="addForm" class="btn btn-light">
+								<i class="fa-solid fa-plus fs-4"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<h2>Produtos: </h2>
+			<section class="shadow border rounded p-3 w-100 mt-5" style="min-width: 240px; max-width: 1000px;">
+				<div class="row">
+					<div class="col col-lg-5 col-sm-8">
+						<form autocomplete="off" class="d-flex" role="search">
+							<input autocomplete="off" aria-autocomplete="none" class="form-control me-2" id="searchInput" type="search" placeholder="Pesquise" data-bs-custom-class="searchTooltip shadow-sm shadow shadow-lg rounded-3">
+							<button class="btn btn-outline-primary px-3" id="searchBtn" type="button">
+								<i class="fa fas fa-search fs-4"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+				<hr>
+				<div class="row">
+					<div class="col-6 d-flex">
+						<button type="button" class="btn btn-outline-primary px-4" id="btnRefresh">
+							<i class="fa-solid fa-arrows-rotate fs-4"></i>
+						</button>
+					</div>
+					<div class="col-6 d-flex justify-content-end">
+						<button type="button" class="btn btn-primary px-4" id="btnAdd" data-bs-toggle="modal" data-bs-target="#addModal">
+							<i class="fa-solid fa-plus fs-4"></i>
+						</button>
+					</div>
+				</div>
+				<hr>
+				<div class="conatiner-fluid pt-3 pe-4">
+					<div id="content-load" style="min-height: 295px;" class="row g-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4"></div>
+				</div>
+				<div class="container-fluid mt-3 text-center">
+					<a class="link-offset-2 link-underline link-underline-opacity-10 link-underline-opacity-75-hover" href="#" id="seeMore">
+						Ver mais...
+					</a>
+				</div>
+			</section>
+		</main>
+		<section id="hiddenObjects" hidden>
+			<div id="card">
+				<div class="col d-flex justify-content-center">
+					<div class="card" style="width: 200px;" value="">
+						<div class="card-header d-flex align-items-center justify-content-between">
+							<p class="m-0 rounded-0 text-primary bg-primary-subtle border-top border-bottom px-2 border-primary"># <span>123</span></p>
+							<button type="button" class="btn btn-outline-primary rounded-2" data-bs-toggle="modal" data-bs-target="#updateModal" onmouseover="changeActiveCard(this.parentNode.parentNode)">
+								<i class="fa-solid fa-pen-to-square fs-4 d-flex align-items-center justify-content-center"></i>
+							</button>
+						</div>
+						<img src="../g_style/assets/no-photo.jpg" alt="Foto do produto" class="card-img-top p-2">
+						<div class="card-body">
+							<p class="card-text">
+								<span class="d-block text-truncate" style="max-width: 150px;" title="">
+									<strong>Nome: </strong>
+									<br>
+									<span></span>
+								</span>
+								<span class="d-block text-truncate" style="max-width: 150px;" title="">
+									<strong>Preço: </strong>
+									<br>
+									<span></span>
+								</span>
+							</p>
+						</div>
+						<div class="card-footer bg-transparent">
+							<button type="button" class="w-100 btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirm" onclick="showDeleteModal(this)">
+								<i class="fa fa-trash fs-4"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="loading">
+				<div class="col">
+					<div class="card" style="width: 200px;" aria-hidden="true">
+						<img class="placeholder-glow" height="100">
+						<div class="card-body">
+						<h5 class="card-title placeholder-glow">
+							<span class="placeholder col-6"></span>
+						</h5>
+						<p class="card-text placeholder-glow">
+							<span class="placeholder col-12"></span>
+							<span class="placeholder float-start mb-4 col-8"></span>
+						</p>
+						<a class="btn btn-danger w-100 disabled placeholder col-6" aria-disabled="true"></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="toastNotification" data-bs-config='{"animation": true, "delay":2500}' style="--showTime:.5s" class="toast slide-right-animation start-0 top-10 ms-3 mt-3 position-fixed align-items-center border-0" role="alert"  aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body"></div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script src="../g_js/global.js" defer></script>
+	<script src="../g_js/init.js" defer></script>
+	<script src="../g_js/main.js" defer></script>
+</html>
