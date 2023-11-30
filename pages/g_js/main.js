@@ -31,11 +31,7 @@ addModal.addEventListener('show.bs.modal', (e)=>{
         if(linkValidation(src.value)){
             img.src=src.value;
         }else{
-<<<<<<< HEAD
             img.src="assets/no-photo.png";
-=======
-            img.src="assets/no-photo.jpg";
->>>>>>> e030e1294dd731e4f46fcb7f34468214e25a02f3
         }
     });
 });
@@ -56,11 +52,7 @@ updateModal.addEventListener('show.bs.modal', (e)=>{
         if(linkValidation(src.value)){
             img.src=src.value;
         }else{
-<<<<<<< HEAD
             img.src="assets/no-photo.png";
-=======
-            img.src="assets/no-photo.jpg";
->>>>>>> e030e1294dd731e4f46fcb7f34468214e25a02f3
         }
     });
 });
