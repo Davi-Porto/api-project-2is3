@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../g_style/global.css">
+    <style>
+        body{
+            min-height: 100vh;
+        }
+        .container-fluid{
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid d-flex justify-content-center align-items-center flex-column">
+        <h1 class="my-5 fs-2">Gerenciador de estoque</h1>
+        <form method="post" class="col-4 d-flex flex-column align-items-center">
+            <div class="form-floating mb-3 w-100">
+                <input type="text" class="form-control" id="floatUser" placeholder="Usuário" name="login" required>
+                <label for="floatUser">Usuário</label>
+            </div>
+            <div class="form-floating mb-3 w-100">
+                <input type="password" class="form-control" id="floatPass" name="pass" placeholder="Senha" required>
+                <label for="floatPass">Senha</label>
+            </div>
+            <input type="submit" class="btn btn-primary w-50" name="acao" value="Login">
+            <a href="../user/index.html" class="my-3">Voltar para a loja</a>
+        </form>
+    </div>
+</body>
+</html>
