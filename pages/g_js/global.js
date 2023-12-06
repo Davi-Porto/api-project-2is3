@@ -8,7 +8,7 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 const Sleep = t => new Promise(res => setTimeout(res, t));
 
-function refreshContent(){
+async function refreshContent(){
     let products;
     var start=(localStorage.getItem("lastStart")==null) ? 0 : parseInt(localStorage.getItem("lastStart")) + 8;
     var end=(localStorage.getItem("lastEnd")==null) ? 7 : parseInt(localStorage.getItem("lastEnd")) + 8;
@@ -23,17 +23,18 @@ function refreshContent(){
                 last: end,
             }
         }
-    }).then(res => {
-        res.products.forEach((v, i)=>{
+    }).then(async res => {
+        await res.products.forEach(async (v, i)=>{
             if(i>=res.first&&i<=res.last){
-                addCard(v, res);
+                await addCard(v, res);
             }
         });
+        endList();
     });
 }
 
 
-function addCard(v, res){
+async function addCard(v, res){
     cardLoading().then(async (load) => {
         let card = document.querySelector('#card > .col').cloneNode(true);
         card.querySelector(".card").value=v.id;
@@ -44,30 +45,27 @@ function addCard(v, res){
         card.querySelector(".card-text>span:nth-child(1)>span").innerHTML=v.nome;
         card.querySelector(".card-text>span:nth-child(2)").title='R$ '+(v.valor.replace('.', ','));
         card.querySelector(".card-text>span:nth-child(2)>span").innerHTML='R$ '+convertBR(v.valor);
-        endList(res, card);
         await Sleep(150);
         content.removeChild(load);
         content.appendChild(card);
     });
 }
 
-function endList(res, card, op){
-    if(res&&res.first!=0){
-        let rect = content.querySelector('.col:nth-child('+(res.first+1)+')').getBoundingClientRect();
-        window.scroll({
-            top: rect.top,
-            left: 0,
-            behavior: "smooth"
-        });
+async function endList(op){
+    if(!op&&localStorage.lastStart&&localStorage.lastStart!=0){
+        await Sleep(200);
+        content.querySelector(`.col:nth-child(${parseInt(localStorage.lastStart)+1}) .btn`).scrollIntoView({ behavior: 'smooth' });
     }
     if(op==true){
         seeMore.hidden=true;
     }else if(op==false){
         seeMore.hidden=false;
     }else{
-        if(res&&res.products[res.products.length-1].id===card.querySelector('.card').value){
-            endList(undefined, undefined, true);
-        }
+        listar().then(data=>{
+            if(data.length==content.children.length){
+                endList(true);
+            }
+        })
     }
 }
 
@@ -84,7 +82,7 @@ function clearContent(){
     }
     localStorage.removeItem("lastStart");
     localStorage.removeItem("lastEnd");
-    endList(undefined, undefined, false);
+    endList(false);
 }
 
 function linkValidation(url='') {
@@ -174,7 +172,7 @@ async function search(prefix, loc){
                 addCard(v, undefined);
             });
         })
-        endList(undefined, undefined, true);
+        endList(true);
     }
 }
 
