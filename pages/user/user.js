@@ -77,3 +77,41 @@ function locAt(){
     }
     return cart
 }
+
+async function modalCartAdd(o, modal){
+    if(modal){
+        const bsModal = new bootstrap.Modal(modal);
+        modal=(modal)?document.querySelector(modal):undefined;
+        await listByID(parseInt(o)).then(data=>{
+            if(data){
+                if(linkValidation(data.foto)){
+                    modal.querySelector("#imgCartAdd").src=data.foto;
+                }
+                modal.querySelector("#nameCartAdd").value=data.nome;
+                modal.querySelector("#valueCartAdd").value="R$ "+convertBR(data.valor);
+                modal.querySelector("#valueCartAdd").setAttribute('data-value', data.valor);
+                modal.querySelector("#qCartAdd").addEventListener('input', (e)=>{
+                    if(e.target.value==""||parseInt(e.target.value)<=0){
+                        e.target.value=1;
+                    }
+                    modal.querySelector("#totalCartAdd").value="R$ "+convertBR(modal.querySelector("#valueCartAdd").getAttribute('data-value')*modal.querySelector("#qCartAdd").value);
+                });
+                modal.querySelector("#qCartAdd").dispatchEvent(new Event('input'));
+            }
+        });
+        bsModal.show();
+        modal.querySelector("#btnCloseModalCardAdd").addEventListener('click', ()=>{
+            btnCloseModalCardAdd(modal);
+        });
+    }
+}
+
+function modalClose(modal){
+    console.log(modal);
+
+    const copy = ()=>{
+        btnCloseModalCardAdd(modal);
+    }
+
+    modal.removeEventListener('clcik', copy);
+}
