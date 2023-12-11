@@ -8,6 +8,9 @@ const mains = document.querySelectorAll('.mains');
 const cartContent = document.querySelector('#cart-content');
 const modal = document.querySelector('#modalAddCart');
 const bsModal = new bootstrap.Modal('#modalAddCart');
+const modalEdit = document.querySelector('#modalEditCart');
+const bsModalEdit = new bootstrap.Modal('#modalEditCart');
+
 
 navTabs.forEach(v=>{
     v.addEventListener('click', swapTabs);
@@ -46,12 +49,16 @@ function loadCart(){
                             </tr>`
             cartContent.innerHTML+=cartItem;
         });
+    }else{
+        cartContent.innerHTML=`<tr value="-1">
+                                    <th class="text-primary" scope="row"></th>
+                                    <td colspan="5">Sem itens no carrinho</td>
+                                </tr>`;
     }
 }
 
 function addCart(id, q=1){
     if(id && typeof(id)=='number' && typeof(q)=='number'){
-        console.log('add');
         listByID(id).then(data=>{
             if(data){
                 var item={
@@ -130,7 +137,9 @@ function removeCart(id){
         if(id<cart.length){
             cart.forEach((v, i)=>{
                 if(i==id){
-                    console.log(i);
+                    cart.splice(i, 1);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    loadCart();
                 }
             })
         }
@@ -141,8 +150,64 @@ function editCart(id){
     if(localStorage.cart && id){
         id=id.getAttribute('value');
         const cart = JSON.parse(localStorage.cart);
-        if(id<cart.length && id>=0){
-            console.log(id);
+        if(id < cart.length && id>=0){
+            cart.forEach((v, i)=>{
+                if(i==id){
+                    modalCartEdit(i);
+                }
+            })
         }
     }
+}
+
+async function modalCartEdit(i){
+    const cart = JSON.parse(localStorage.cart);
+    const v = cart[i];
+    await listByID(parseInt(v.id)).then(data=>{
+        if(data){
+            localStorage.setItem('cartEdit', JSON.stringify({
+                i: i,
+                q: v.quantidade
+            }));
+            if(linkValidation(data.foto)){
+                modalEdit.querySelector("#imgCartEdit").src=data.foto;
+            }else{
+                modalEdit.querySelector("#imgCartEdit").src="../g_style/assets/no-photo.png";
+            }
+            modalEdit.querySelector("#nameCartEdit").value=data.nome;
+            modalEdit.querySelector("#valueCartEdit").value="R$ "+convertBR(data.valor);
+            modalEdit.querySelector("#valueCartEdit").setAttribute('data-value', data.valor);
+            modalEdit.querySelector("#qCartEdit").value=v.quantidade;
+            modalEdit.querySelector("#qCartEdit").addEventListener('input', (e)=>{
+                if(e.target.value==""||parseInt(e.target.value)<=0){
+                    e.target.value=1;
+                }
+                modalEdit.querySelector("#totalCartEdit").value="R$ "+convertBR(modalEdit.querySelector("#valueCartEdit").getAttribute('data-value')*modalEdit.querySelector("#qCartEdit").value);
+                localStorage.setItem('cartEdit', JSON.stringify({
+                    i: i,
+                    q: e.target.value
+                }));
+            });
+            modalEdit.querySelector("#qCartEdit").dispatchEvent(new Event('input'));
+        }else{
+            alert("Este produto não existe mais");
+        }
+    });
+    bsModalEdit.show();
+    modalEdit.querySelector("#btnCloseModalCardEdit").addEventListener('click', modalEditClose);
+}
+
+function modalEditClose(e){
+    if(localStorage.cartEdit){
+        const cart = JSON.parse(localStorage.cart);
+        const active = JSON.parse(localStorage.cartEdit);
+        const aux = cart[active.i];
+        aux.quantidade=active.q;
+        cart[active.i]=aux;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        bsModalEdit.hide();
+        loadCart();
+    }
+    modalEdit.querySelector("#btnCloseModalCardEdit").removeEventListener('clcik', modalEditClose);
+    localStorage.removeItem('cartEdit');
 }
