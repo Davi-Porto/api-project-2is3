@@ -6,6 +6,8 @@
 const navTabs = document.querySelectorAll('.nav-tab-items');
 const mains = document.querySelectorAll('.mains');
 const cartContent = document.querySelector('#cart-content');
+const modal = document.querySelector('#modalAddCart');
+const bsModal = new bootstrap.Modal('#modalAddCart');
 
 navTabs.forEach(v=>{
     v.addEventListener('click', swapTabs);
@@ -34,10 +36,10 @@ function loadCart(){
                                 <td>R$ ${convertBR(v.valor)}</td>
                                 <td>R$ ${convertBR(v.valor*v.quantidade)}</td>
                                 <td>
-                                    <button type="button" class="btn btn-danger">
+                                    <button type="button" class="btn btn-danger" onclick="removeCart(this.parentNode.parentNode)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-                                    <button type="button" class="btn">
+                                    <button type="button" class="btn" onclick="editCart(this.parentNode.parentNode)">
                                         <i class="fa-solid fa-gear"></i>
                                     </button>
                                 </td>
@@ -49,6 +51,7 @@ function loadCart(){
 
 function addCart(id, q=1){
     if(id && typeof(id)=='number' && typeof(q)=='number'){
+        console.log('add');
         listByID(id).then(data=>{
             if(data){
                 var item={
@@ -78,40 +81,68 @@ function locAt(){
     return cart
 }
 
-async function modalCartAdd(o, modal){
-    if(modal){
-        const bsModal = new bootstrap.Modal(modal);
-        modal=(modal)?document.querySelector(modal):undefined;
-        await listByID(parseInt(o)).then(data=>{
-            if(data){
-                if(linkValidation(data.foto)){
-                    modal.querySelector("#imgCartAdd").src=data.foto;
-                }
-                modal.querySelector("#nameCartAdd").value=data.nome;
-                modal.querySelector("#valueCartAdd").value="R$ "+convertBR(data.valor);
-                modal.querySelector("#valueCartAdd").setAttribute('data-value', data.valor);
-                modal.querySelector("#qCartAdd").addEventListener('input', (e)=>{
-                    if(e.target.value==""||parseInt(e.target.value)<=0){
-                        e.target.value=1;
-                    }
-                    modal.querySelector("#totalCartAdd").value="R$ "+convertBR(modal.querySelector("#valueCartAdd").getAttribute('data-value')*modal.querySelector("#qCartAdd").value);
-                });
-                modal.querySelector("#qCartAdd").dispatchEvent(new Event('input'));
+async function modalCartAdd(o){
+    await listByID(parseInt(o)).then(data=>{
+        if(data){
+            localStorage.setItem('cartAdd', JSON.stringify({
+                id: data.id,
+                q: 1
+            }));
+            if(linkValidation(data.foto)){
+                modal.querySelector("#imgCartAdd").src=data.foto;
+            }else{
+                modal.querySelector("#imgCartAdd").src="../g_style/assets/no-photo.png";
             }
-        });
-        bsModal.show();
-        modal.querySelector("#btnCloseModalCardAdd").addEventListener('click', ()=>{
-            btnCloseModalCardAdd(modal);
-        });
+            modal.querySelector("#nameCartAdd").value=data.nome;
+            modal.querySelector("#valueCartAdd").value="R$ "+convertBR(data.valor);
+            modal.querySelector("#valueCartAdd").setAttribute('data-value', data.valor);
+            modal.querySelector("#qCartAdd").addEventListener('input', (e)=>{
+                if(e.target.value==""||parseInt(e.target.value)<=0){
+                    e.target.value=1;
+                }
+                modal.querySelector("#totalCartAdd").value="R$ "+convertBR(modal.querySelector("#valueCartAdd").getAttribute('data-value')*modal.querySelector("#qCartAdd").value);
+                localStorage.setItem('cartAdd', JSON.stringify({
+                    id: data.id,
+                    q: e.target.value
+                }));
+            });
+            modal.querySelector("#qCartAdd").dispatchEvent(new Event('input'));
+        }
+    });
+    bsModal.show();
+    modal.querySelector("#btnCloseModalCardAdd").addEventListener('click', modalClose);
+}
+
+function modalClose(e){
+    if(localStorage.cartAdd){
+        const active = JSON.parse(localStorage.cartAdd);
+        addCart(parseInt(active.id), parseInt(active.q));
+        bsModal.hide();
+    }
+    modal.querySelector("#btnCloseModalCardAdd").removeEventListener('clcik', modalClose);
+    localStorage.removeItem('cartAdd');
+}
+
+function removeCart(id){
+    if(localStorage.cart && id){
+        id=id.getAttribute('value');
+        const cart = JSON.parse(localStorage.cart);
+        if(id<cart.length){
+            cart.forEach((v, i)=>{
+                if(i==id){
+                    console.log(i);
+                }
+            })
+        }
     }
 }
 
-function modalClose(modal){
-    console.log(modal);
-
-    const copy = ()=>{
-        btnCloseModalCardAdd(modal);
+function editCart(id){
+    if(localStorage.cart && id){
+        id=id.getAttribute('value');
+        const cart = JSON.parse(localStorage.cart);
+        if(id<cart.length && id>=0){
+            console.log(id);
+        }
     }
-
-    modal.removeEventListener('clcik', copy);
 }
