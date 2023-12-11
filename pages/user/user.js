@@ -70,9 +70,16 @@ function addCart(id, q=1){
                 var cart = locAt();
                 cart.push(item);
                 localStorage.setItem('cart', JSON.stringify(cart));
+                statusMsg({
+                    success: true,
+                    msg: "Produto adicionado ao carrinho!"
+                });
                 loadCart();
             }else{
-                alert('Produto inexistente, atualize a página');
+                statusMsg({
+                    success: false,
+                    msg: "Produto inexistente<br>Atualize os produtos..."
+                });
             }
         });
     }
@@ -139,6 +146,10 @@ function removeCart(id){
                 if(i==id){
                     cart.splice(i, 1);
                     localStorage.setItem('cart', JSON.stringify(cart));
+                    statusMsg({
+                        success: true,
+                        msg: "Produto removido do carrinho!"
+                    });
                     loadCart();
                 }
             })
@@ -189,11 +200,14 @@ async function modalCartEdit(i){
                 }));
             });
             modalEdit.querySelector("#qCartEdit").dispatchEvent(new Event('input'));
+            bsModalEdit.show();
         }else{
-            alert("Este produto não existe mais");
+            statusMsg({
+                success: false,
+                msg: "Parece que este produto esgotou e não existe mais :("
+            });
         }
     });
-    bsModalEdit.show();
     modalEdit.querySelector("#btnCloseModalCardEdit").addEventListener('click', modalEditClose);
 }
 
@@ -206,6 +220,10 @@ function modalEditClose(e){
         cart[active.i]=aux;
         localStorage.setItem('cart', JSON.stringify(cart));
         bsModalEdit.hide();
+        statusMsg({
+            success: true,
+            msg: "Detalhes do pedido alterados com sucesso!"
+        });
         loadCart();
     }
     modalEdit.querySelector("#btnCloseModalCardEdit").removeEventListener('clcik', modalEditClose);
